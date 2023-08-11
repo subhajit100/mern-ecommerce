@@ -169,7 +169,7 @@ passport.deserializeUser(function (user, cb) {
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.post("/create-payment-intent", async (req, res) => {
-  const { totalAmount } = req.body;
+  const { totalAmount, orderId } = req.body;
 
   // Create a PaymentIntent with the order amount and currency
   const paymentIntent = await stripe.paymentIntents.create({
@@ -177,6 +177,9 @@ app.post("/create-payment-intent", async (req, res) => {
     currency: "inr",
     automatic_payment_methods: {
       enabled: true,
+    },
+    metadata: {
+      orderId
     },
   });
 
@@ -200,7 +203,12 @@ app.use("/brands", isAuth(), brandsRouter);
 app.use("/users", isAuth(), usersRouter);
 app.use("/auth", authRouter);
 app.use("/cart", isAuth(), cartsRouter);
+// this '/orders' route is also present in front end which is confusing, so changing frontend name to '/my-orders'
 app.use("/orders", isAuth(), ordersRouter);
+// this * will hold any unmathced url and will send the index.html file for that.
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve("build", "index.html"));
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
