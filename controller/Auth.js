@@ -75,7 +75,8 @@ exports.logoutUser = async (req, res) => {
     //   httpOnly: true,
     // })
     .clearCookie('jwt')
-    .sendStatus(200);
+    .status(200)
+    .send("Successfull log out");
 };
 
 exports.resetPasswordRequest = async (req, res) => {
