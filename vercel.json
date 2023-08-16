@@ -14,5 +14,16 @@
       "source": "/(.*)",
       "destination": "index.js"
     }
+  ],
+  "headers": [
+    {
+      "source": "/auth/logout",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store,public, max-age=0, must-revalidate"
+        }
+      ]
+    }
   ]
 }
