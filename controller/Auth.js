@@ -70,10 +70,11 @@ exports.checkAuth = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   res
-    .cookie("jwt", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-    })
+    // .cookie("jwt", null, {
+    //   expires: new Date(Date.now()),
+    //   httpOnly: true,
+    // })
+    .clearCookie('jwt')
     .sendStatus(200);
 };
 
