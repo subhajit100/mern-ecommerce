@@ -69,6 +69,7 @@ exports.checkAuth = async (req, res) => {
 };
 
 exports.logoutUser = async (req, res) => {
+    res.set('My-custom-header', 'subhajitbro');
   res
     .cookie("jwt", null, {
       expires: new Date(Date.now()),

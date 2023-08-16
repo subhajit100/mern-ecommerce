@@ -7,10 +7,6 @@ exports.fetchOrdersByUser = async (req, res) => {
   try {
     const { id } = req.user;
     const orders = await Order.find({ user: id });
-    res.setHeader(
-        "Cache-Control",
-        "no-cache, no-store, max-age=0, must-revalidate"
-      );
     res.status(200).json(orders);
   } catch (err) {
     res.status(400).json({ err });
