@@ -18,7 +18,7 @@ exports.createUser = async (req, res) => {
           throw err;
         }
         const userResponse = await User.find({ email: req.body.email });
-        if (userResponse && userResponse.length>0) {
+        if (userResponse && userResponse.length > 0) {
           res.status(401).send("User already exists");
           return;
         }
@@ -86,7 +86,7 @@ exports.resetPasswordRequest = async (req, res) => {
       const token = crypto.randomBytes(48).toString("hex");
       user.resetPasswordToken = token;
       await user.save();
-      const resetPageLink = `https://mern-ecommerce-neon.vercel.app/reset-password?token=${token}&email=${email}`;
+      const resetPageLink = `https://mern-ecommerce-neon.vercel.app/reset-my-password?token=${token}&email=${email}`;
       const subject = "Reset password for your E-Commerce account";
       const html = `<p>Click <a href = ${resetPageLink}>here</a> to reset password</p>`;
 
