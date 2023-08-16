@@ -204,14 +204,14 @@ app.use("/auth", authRouter);
 app.use("/cart", isAuth(), cartsRouter);
 // this '/orders' route is also present in front end which is confusing, so changing frontend name to '/my-orders'
 app.use("/orders", isAuth(), ordersRouter);
-app.get("/updateProducts/test", async (req, res) => {
-  try {
-    const products = await Product.updateMany({}, { $set: { deleted: false } });
-    res.status(200).json({ status: "done" });
-  } catch (err) {
-    res.status(401).json({ err });
-  }
-});
+// app.get("/updateProducts/test", async (req, res) => {
+//   try {
+//     const products = await Product.updateMany({}, { $set: { deleted: false } });
+//     res.status(200).json({ status: "done" });
+//   } catch (err) {
+//     res.status(401).json({ err });
+//   }
+// });
 app.get("*", (req, res) => {
   res.sendFile(path.resolve("build", "index.html"));
 });

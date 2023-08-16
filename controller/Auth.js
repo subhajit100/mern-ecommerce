@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 
 exports.createUser = async (req, res) => {
   try {
-    console.log("inside first line: ", req.body);
     const salt = crypto.randomBytes(16);
     crypto.pbkdf2(
       req.body.password,
