@@ -10,6 +10,7 @@ const productSchema = new Schema({
     min: [1, "wrong min price"],
     max: [10000, "wrong max price"],
   },
+  discountPrice: { type: Number },
   discountPercentage: {
     type: Number,
     required: true,
@@ -28,13 +29,22 @@ const productSchema = new Schema({
   category: { type: String, required: true },
   thumbnail: { type: String, required: true },
   images: { type: [String], required: true },
+  colors: { type: [Schema.Types.Mixed] },
+  sizes: { type: [Schema.Types.Mixed] },
+  highlights: { type: [String] },
   deleted: { type: Boolean, default: false },
 });
 
-const virtual = productSchema.virtual("id");
-virtual.get(function () {
+const virtualId = productSchema.virtual("id");
+virtualId.get(function () {
   return this._id;
 });
+
+// const virtualDiscountPrice = productSchema.virtual("discountPrice");
+// virtualDiscountPrice.get(function () {
+//   return Math.round(this.price * (1 - this.discountPercentage / 100));
+// });
+
 productSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,

@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
-const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
@@ -22,19 +21,18 @@ const { cartsRouter } = require("./routes/Carts");
 const { ordersRouter } = require("./routes/Orders");
 const { User } = require("./model/User");
 const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
+const { Order } = require("./model/Order");
+const { Product } = require("./model/Product");
 const port = process.env.PORT || 8080;
 
 // Webhooks
-
-// TODO:- We will capture actual orders after deploying the application on public URL
-
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
-  (request, response) => {
+  async (request, response) => {
     const sig = request.headers["stripe-signature"];
 
     let event;
@@ -50,8 +48,11 @@ app.post(
     switch (event.type) {
       case "payment_intent.succeeded":
         const paymentIntentSucceeded = event.data.object;
-        console.log({ paymentIntentSucceeded });
-        // Then define and call a function to handle the event payment_intent.succeeded
+        const order = await Order.findById(
+          paymentIntentSucceeded.metadata.orderId
+        );
+        order.paymentStatus = "received";
+        await order.save();
         break;
       // ... handle other event types
       default:
@@ -148,7 +149,6 @@ passport.use(
 
 // this creates session variable req.user on begin called from callbacks
 passport.serializeUser(function (user, cb) {
-  console.log("serialize", user);
   process.nextTick(function () {
     return cb(null, { id: user.id, role: user.role });
   });
@@ -156,7 +156,6 @@ passport.serializeUser(function (user, cb) {
 
 // this changes session variable req.user on begin called from authorized requests
 passport.deserializeUser(function (user, cb) {
-  console.log("de-serialize", user);
   process.nextTick(function () {
     return cb(null, user);
   });
@@ -179,7 +178,7 @@ app.post("/create-payment-intent", async (req, res) => {
       enabled: true,
     },
     metadata: {
-      orderId
+      orderId,
     },
   });
 
@@ -205,7 +204,14 @@ app.use("/auth", authRouter);
 app.use("/cart", isAuth(), cartsRouter);
 // this '/orders' route is also present in front end which is confusing, so changing frontend name to '/my-orders'
 app.use("/orders", isAuth(), ordersRouter);
-// this * will hold any unmathced url and will send the index.html file for that.
+app.get("/updateProducts/test", async (req, res) => {
+  try {
+    const products = await Product.updateMany({}, { $set: { deleted: false } });
+    res.status(200).json({ status: "done" });
+  } catch (err) {
+    res.status(401).json({ err });
+  }
+});
 app.get("*", (req, res) => {
   res.sendFile(path.resolve("build", "index.html"));
 });
