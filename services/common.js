@@ -18,12 +18,23 @@ const transporter = nodemailer.createTransport({
 // send mail with defined transport object
 // we do not want external access to mail api
 exports.sendMail = async ({ to, subject, html }) => {
-  const info = await transporter.sendMail({
-    from: '"E-commerce" <asubhajit35@gmail.com>', // sender address
-    to, // list of receivers
-    subject, // Subject line
-    text: "", // plain text body
-    html, // html body
+  const info = await new Promise((resolve, reject) => {
+    transporter.sendMail(
+      {
+        from: '"E-commerce" <asubhajit35@gmail.com>', // sender address
+        to, // list of receivers
+        subject, // Subject line
+        text: "", // plain text body
+        html, // html body
+      },
+      (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      }
+    );
   });
   return info;
 };
