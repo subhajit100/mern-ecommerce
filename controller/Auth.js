@@ -87,7 +87,7 @@ exports.resetPasswordRequest = async (req, res) => {
       const token = crypto.randomBytes(48).toString("hex");
       user.resetPasswordToken = token;
       await user.save();
-      const resetPageLink = `https://mern-ecommerce-neon.vercel.app/reset-my-password?token=${token}&email=${email}`;
+      const resetPageLink = `https://mern-ecommerce-git-main-subhajit100.vercel.app/reset-my-password?token=${token}&email=${email}`;
       const subject = "Reset password for your E-Commerce account";
       const html = `<p>Click <a href = ${resetPageLink}>here</a> to reset password</p>`;
 
