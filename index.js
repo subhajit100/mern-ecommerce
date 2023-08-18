@@ -103,7 +103,7 @@ passport.use(
       try {
         const user = await User.findOne({ email: email });
         if (!user) {
-          done(null, false, { message: "Invalid Credentials" }); // for safety
+          return done(null, false, { message: "Invalid Credentials" }); // for safety
         }
         crypto.pbkdf2(
           password,
@@ -112,6 +112,9 @@ passport.use(
           32,
           "sha256",
           async function (err, hashedPassword) {
+            if (err) {
+              throw err;
+            }
             if (crypto.timingSafeEqual(user.password, hashedPassword)) {
               const token = jwt.sign(
                 sanitizeUser(user),
