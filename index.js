@@ -29,6 +29,8 @@ const port = process.env.PORT || 8080;
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
+// moving this `/webhook` route to top as it uses express.raw which will override express.json used below in middleware section.
+
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
@@ -76,7 +78,7 @@ app.use(
     exposedHeaders: ["X-Total-Count"],
   })
 );
-// app.use(express.raw({ type: "application/json" }));
+
 app.use(express.static(path.resolve(__dirname, "build")));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
